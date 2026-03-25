@@ -4,10 +4,13 @@ source /home/mananaga/miniconda/etc/profile.d/conda.sh
 conda activate floqcritic
 export MUJOCO_GL=egl
 
-cd /home/mananaga/BSC_branches/main/Binary-Success-Critic
+cd "$(dirname "$0")/../.."
 
 python main.py \
     --env_name=antmaze-large-navigate-singletask-v0 \
     --agent=agents/fql.py \
     --agent.alpha=10 \
-    --save_dir=./exp
+    --save_dir=./exp \
+    --entity=RL-experiments \
+    --project_name=BSC \
+    --run_name=FQL

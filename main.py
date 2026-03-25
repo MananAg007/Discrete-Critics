@@ -30,6 +30,8 @@ import  jax.numpy as jnp
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string('project_name', 'Debug', 'Project Name.')
+flags.DEFINE_string('entity', None, 'WandB entity (team) name.')
+flags.DEFINE_string('run_name', None, 'WandB run name (overrides auto-generated name).')
 flags.DEFINE_string('run_group', 'Debug', 'Run group.')
 flags.DEFINE_integer('seed', 0, 'Random seed.')
 flags.DEFINE_string('env_name', 'cube-double-play-singletask-v0', 'Environment (dataset) name.')
@@ -61,8 +63,8 @@ config_flags.DEFINE_config_file('agent', 'agents/fql.py', lock_config=False)
 def main(_):
     # Set up logger.        
 
-    exp_name = get_exp_name(FLAGS.seed)
-    setup_wandb(project=FLAGS.project_name+FLAGS.env_name, group=FLAGS.run_group, name=exp_name, mode = "online")
+    exp_name = FLAGS.run_name if FLAGS.run_name else get_exp_name(FLAGS.seed)
+    setup_wandb(entity=FLAGS.entity, project=FLAGS.project_name, group=FLAGS.run_group, name=exp_name, mode = "online")
 
     FLAGS.save_dir = os.path.join(FLAGS.save_dir, wandb.run.project, FLAGS.run_group, exp_name)
     os.makedirs(FLAGS.save_dir, exist_ok=True)
