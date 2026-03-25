@@ -86,7 +86,7 @@ class BSCAgent(flax.struct.PyTreeNode):
         q_loss = -q.mean()
 
         # Total loss.
-        actor_loss = bc_flow_loss.mean() + self.config['alpha'] * distill_loss + q_loss
+        actor_loss = bc_flow_loss.mean() + self.config['alpha'] * distill_loss + self.config['beta'] * q_loss
 
         # Additional metrics for logging.
         actions = self.sample_actions(batch['observations'], seed=rng)
@@ -290,7 +290,8 @@ def get_config():
             discount=1.0,  # Discount factor. BSC uses gamma=1.0 for pure P(success) semantics.
             tau=0.005,  # Target network update rate.
             q_agg='mean',  # Aggregation method for target Q values.
-            alpha=3.0,  # BC coefficient (lower than FQL since Q-loss is bounded to [-1, 0]).
+            alpha=10.0,  # BC coefficient. Same as FQL since beta now independently controls Q-loss scale.
+            beta=1.0,  # Q-loss scale factor. Increase to strengthen Q signal relative to BC/distillation.
             flow_steps=10,  # Number of flow steps.
             normalize_q_loss=False,  # Must remain False for BSC (Q in [0,1] makes lam blow up).
             encoder=ml_collections.config_dict.placeholder(str),  # Visual encoder name (None, 'impala_small', etc.).
